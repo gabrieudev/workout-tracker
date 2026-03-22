@@ -3,7 +3,7 @@ await Bun.build({
 	outdir: "./build",
 	target: "bun",
 	compile: {
-		target: "bun-linux-arm64",
+		target: "bun-linux-x64",
 		outfile: "server",
 	},
 	minify: true,
