@@ -3,10 +3,10 @@ import { Elysia } from "elysia";
 import z from "zod";
 import { auth, OpenAPI } from "./infra/auth/auth";
 import { healthRoute } from "./presentation/http/routes/health.route";
+import { errorPlugin } from "./presentation/http/error-handler";
 
 const app = new Elysia()
 	.mount(auth.handler)
-	.use(healthRoute)
 	.use(
 		openapi({
 			path: "/docs",
@@ -23,6 +23,8 @@ const app = new Elysia()
 			},
 		}),
 	)
-	.listen(3000);
+	.use(errorPlugin)
+	.use(healthRoute)
+	.listen(process.env.PORT || 3000);
 
 console.log(`Servidor rodando em ${app.server?.hostname}:${app.server?.port}`);
