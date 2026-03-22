@@ -1,15 +1,24 @@
 {
-  "name": "workout-tracker",
-  "version": "1.0.50",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "bun run --watch src/index.ts"
-  },
-  "dependencies": {
-    "elysia": "latest"
-  },
-  "devDependencies": {
-    "bun-types": "latest"
-  },
-  "module": "src/index.js"
+	"name": "workout-tracker",
+	"version": "1.0.50",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1",
+		"dev": "bun run --watch src/index.ts"
+	},
+	"dependencies": {
+		"@better-auth/drizzle-adapter": "^1.5.6",
+		"@elysiajs/cors": "^1.4.1",
+		"better-auth": "^1.5.6",
+		"dotenv": "^17.3.1",
+		"drizzle-orm": "^0.45.1",
+		"elysia": "latest",
+		"postgres": "^3.4.8",
+		"zod": "^4.3.6"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "2.4.8",
+		"bun-types": "latest",
+		"drizzle-kit": "^0.31.10"
+	},
+	"module": "src/index.js"
 }
