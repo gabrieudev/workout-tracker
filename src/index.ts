@@ -1,10 +1,11 @@
+import { logger } from "@bogeychan/elysia-logger";
 import { openapi } from "@elysiajs/openapi";
 import { Elysia } from "elysia";
-import { auth, OpenAPI } from "./infra/auth/auth";
-import { healthRoute } from "./presentation/http/routes/health.route";
-import { errorPlugin } from "./presentation/http/error-handler";
-import { workoutRoutes } from "./presentation/http/routes/workout.routes";
 import z from "zod";
+import { auth, OpenAPI } from "./infra/auth/auth";
+import { errorPlugin } from "./presentation/http/error-handler";
+import { healthRoute } from "./presentation/http/routes/health.route";
+import { workoutRoutes } from "./presentation/http/routes/workout.routes";
 
 const app = new Elysia()
 	.mount(auth.handler)
@@ -21,6 +22,34 @@ const app = new Elysia()
 			},
 			mapJsonSchema: {
 				zod: z.toJSONSchema,
+			},
+		}),
+	)
+	.use(
+		logger({
+			level: process.env.NODE_ENV === "production" ? "info" : "debug",
+
+			...(process.env.NODE_ENV === "production"
+				? {}
+				: {
+						transport: {
+							target: "pino-pretty",
+							options: {
+								colorize: true,
+								translateTime: "HH:MM:ss",
+								ignore: "pid,hostname",
+								singleLine: true,
+							},
+						},
+					}),
+
+			autoLogging: true,
+
+			customProps(ctx) {
+				return {
+					method: ctx.request.method,
+					path: ctx.path,
+				};
 			},
 		}),
 	)

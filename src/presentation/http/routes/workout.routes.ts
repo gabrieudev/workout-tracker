@@ -67,7 +67,11 @@ export const workoutRoutes = new Elysia({
 		async ({ params, user }) => {
 			return findWorkoutByIdUseCase.execute(params.id, user.id);
 		},
-		{ auth: true, response: workoutResponseSchema },
+		{
+			auth: true,
+			response: workoutResponseSchema,
+			params: z.object({ id: z.uuid() }),
+		},
 	)
 
 	.put(
@@ -75,7 +79,12 @@ export const workoutRoutes = new Elysia({
 		async ({ params, body, user }) => {
 			return updateWorkoutUseCase.execute(params.id, user.id, body);
 		},
-		{ body: updateWorkoutSchema, auth: true, response: workoutResponseSchema },
+		{
+			body: updateWorkoutSchema,
+			auth: true,
+			response: workoutResponseSchema,
+			params: z.object({ id: z.uuid() }),
+		},
 	)
 
 	.delete(
@@ -89,6 +98,7 @@ export const workoutRoutes = new Elysia({
 			response: z.object({
 				success: z.boolean(),
 			}),
+			params: z.object({ id: z.uuid() }),
 		},
 	)
 
