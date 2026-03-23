@@ -28,21 +28,6 @@ const app = new Elysia()
 	.use(
 		logger({
 			level: process.env.NODE_ENV === "production" ? "info" : "debug",
-
-			...(process.env.NODE_ENV === "production"
-				? {}
-				: {
-						transport: {
-							target: "pino-pretty",
-							options: {
-								colorize: true,
-								translateTime: "HH:MM:ss",
-								ignore: "pid,hostname",
-								singleLine: true,
-							},
-						},
-					}),
-
 			autoLogging: true,
 
 			customProps(ctx) {
