@@ -1,21 +1,21 @@
 import { Elysia } from "elysia";
+import { z } from "zod";
 import {
 	createWorkoutSchema,
 	updateWorkoutSchema,
+	workoutQuerySchema,
 	workoutReportQuerySchema,
 	workoutReportResponseSchema,
 	workoutResponseSchema,
 } from "../../../application/workout/workout.schemas";
-import { betterAuthMacro } from "../middlewares/auth";
 import { CreateWorkoutUseCase } from "../../../domain/workout/create-workout.use-case";
-import { DrizzleWorkoutRepository } from "../../../infra/repositories/drizzle-workout.repository";
+import { DeleteWorkoutUseCase } from "../../../domain/workout/delete-workout.use-case";
 import { FindAllWorkoutsUseCase } from "../../../domain/workout/find-all-workouts.use-case";
 import { FindWorkoutByIdUseCase } from "../../../domain/workout/find-workout-by-id.use-case";
 import { UpdateWorkoutUseCase } from "../../../domain/workout/update-workout.use-case";
-import { DeleteWorkoutUseCase } from "../../../domain/workout/delete-workout.use-case";
 import { WorkoutReportUseCase } from "../../../domain/workout/workout-report.use-case";
-import { querySchema } from "../../../application/pagination/pagination.schemas";
-import { z } from "zod";
+import { DrizzleWorkoutRepository } from "../../../infra/repositories/drizzle-workout.repository";
+import { betterAuthMacro } from "../middlewares/auth";
 
 const repo = new DrizzleWorkoutRepository();
 const createWorkoutUseCase = new CreateWorkoutUseCase(repo);
@@ -52,7 +52,7 @@ export const workoutRoutes = new Elysia({
 		},
 		{
 			auth: true,
-			query: querySchema,
+			query: workoutQuerySchema,
 			response: z.object({
 				data: workoutResponseSchema.array(),
 				page: z.number().optional(),

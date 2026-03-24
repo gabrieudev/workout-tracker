@@ -3,7 +3,7 @@ import type {
 	CreateWorkoutInput,
 	UpdateWorkoutInput,
 	WorkoutResponse,
-	WorkoutsResponse,
+	WorkoutsPaginatedResponse,
 } from "../../application/workout/workout.schemas";
 import type { WorkoutRepository } from "../../domain/workout/workout.repository";
 import { db } from "../db/client";
@@ -77,7 +77,7 @@ export class DrizzleWorkoutRepository implements WorkoutRepository {
 	async create(
 		data: CreateWorkoutInput,
 		userId: string,
-	): Promise<WorkoutResponse> {
+	): Promise<WorkoutResponse | null> {
 		const [created] = await db
 			.insert(workouts)
 			.values({
@@ -89,9 +89,7 @@ export class DrizzleWorkoutRepository implements WorkoutRepository {
 
 		const workout = await this.loadById(created.id, userId);
 
-		if (!workout) {
-			throw new Error("Workout created but could not be loaded");
-		}
+		if (!workout) return null;
 
 		return toWorkoutResponse(workout);
 	}
@@ -102,7 +100,7 @@ export class DrizzleWorkoutRepository implements WorkoutRepository {
 		limit,
 		from,
 		to,
-	}: FindAllParams): Promise<WorkoutsResponse> {
+	}: FindAllParams): Promise<WorkoutsPaginatedResponse> {
 		const shouldPaginate = page !== undefined && limit !== undefined;
 		const offset = shouldPaginate ? (page - 1) * limit : undefined;
 

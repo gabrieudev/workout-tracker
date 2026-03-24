@@ -44,11 +44,19 @@ export const workoutReportResponseSchema = z.object({
 	percentage: z.number().int().nonnegative(),
 });
 
+export const workoutQuerySchema = z.object({
+	page: z.string().optional(),
+	limit: z.string().optional(),
+	from: z.iso.datetime().nullable().optional(),
+	to: z.iso.datetime().nullable().optional(),
+});
+
 export type CreateWorkoutInput = z.infer<typeof createWorkoutSchema>;
 export type UpdateWorkoutInput = z.infer<typeof updateWorkoutSchema>;
 export type WorkoutResponse = z.infer<typeof workoutResponseSchema>;
 export type WorkoutReportQuery = z.infer<typeof workoutReportQuerySchema>;
 export type WorkoutReportResponse = z.infer<typeof workoutReportResponseSchema>;
+export type WorkoutQuery = z.infer<typeof workoutQuerySchema>;
 export type WorkoutsPaginatedResponse = z.infer<
 	typeof workoutsPaginatedResponseSchema
 >;

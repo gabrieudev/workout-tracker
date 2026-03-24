@@ -6,6 +6,7 @@ import { auth, OpenAPI } from "./infra/auth/auth";
 import { errorPlugin } from "./presentation/http/error-handler";
 import { healthRoute } from "./presentation/http/routes/health.route";
 import { workoutRoutes } from "./presentation/http/routes/workout.routes";
+import { commentRoutes } from "./presentation/http/routes/comment.routes";
 
 const app = new Elysia()
 	.mount(auth.handler)
@@ -41,6 +42,7 @@ const app = new Elysia()
 	.use(errorPlugin)
 	.use(healthRoute)
 	.use(workoutRoutes)
+	.use(commentRoutes)
 	.listen(process.env.PORT || 3000);
 
 console.log(`Servidor rodando em ${app.server?.hostname}:${app.server?.port}`);

@@ -23,6 +23,14 @@ export const commentsPaginatedResponseSchema = z.object({
 	total: z.number().int().nonnegative(),
 });
 
+export const commentQuerySchema = z.object({
+	workoutId: z.uuid().optional(),
+	page: z.string().optional(),
+	limit: z.string().optional(),
+	from: z.iso.datetime().nullable().optional(),
+	to: z.iso.datetime().nullable().optional(),
+});
+
 export type CommentResponse = z.infer<typeof commentResponseSchema>;
 export type CreateCommentRequest = z.infer<typeof createCommentRequestSchema>;
 export type UpdateCommentRequest = z.infer<typeof updateCommentRequestSchema>;

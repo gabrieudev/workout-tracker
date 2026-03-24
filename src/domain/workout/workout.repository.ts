@@ -6,7 +6,10 @@ import type {
 } from "../../application/workout/workout.schemas";
 
 export interface WorkoutRepository {
-	create(data: CreateWorkoutInput, userId: string): Promise<WorkoutResponse>;
+	create(
+		data: CreateWorkoutInput,
+		userId: string,
+	): Promise<WorkoutResponse | null>;
 	findAll(params: {
 		userId: string;
 		page?: number;
