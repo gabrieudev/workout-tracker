@@ -1,7 +1,6 @@
 import { Elysia } from "elysia";
 import {
 	createWorkoutSchema,
-	querySchema,
 	updateWorkoutSchema,
 	workoutReportQuerySchema,
 	workoutReportResponseSchema,
@@ -15,7 +14,8 @@ import { FindWorkoutByIdUseCase } from "../../../domain/workout/find-workout-by-
 import { UpdateWorkoutUseCase } from "../../../domain/workout/update-workout.use-case";
 import { DeleteWorkoutUseCase } from "../../../domain/workout/delete-workout.use-case";
 import { WorkoutReportUseCase } from "../../../domain/workout/workout-report.use-case";
-import z from "zod";
+import { querySchema } from "../../../application/pagination/pagination.schemas";
+import { z } from "zod";
 
 const repo = new DrizzleWorkoutRepository();
 const createWorkoutUseCase = new CreateWorkoutUseCase(repo);

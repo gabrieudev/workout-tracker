@@ -2,7 +2,7 @@ import type {
 	CreateWorkoutInput,
 	UpdateWorkoutInput,
 	WorkoutResponse,
-	WorkoutsResponse,
+	WorkoutsPaginatedResponse,
 } from "../../application/workout/workout.schemas";
 
 export interface WorkoutRepository {
@@ -13,7 +13,7 @@ export interface WorkoutRepository {
 		limit?: number;
 		from?: Date;
 		to?: Date;
-	}): Promise<WorkoutsResponse>;
+	}): Promise<WorkoutsPaginatedResponse>;
 	findById(id: string, userId: string): Promise<WorkoutResponse | null>;
 	update(
 		id: string,

@@ -1,35 +1,21 @@
 import { z } from "zod";
 import { userResponseSchema } from "../user/user.schemas";
-
-export const workoutExerciseResponseSchema = z.object({
-	id: z.string(),
-	workoutId: z.string(),
-	name: z.string(),
-	notes: z.string().nullable(),
-	completed: z.boolean(),
-	order: z.number().int(),
-});
-
-export const workoutCommentResponseSchema = z.object({
-	id: z.string(),
-	workoutId: z.string(),
-	content: z.string(),
-	createdAt: z.iso.datetime(),
-});
+import { exerciseResponseSchema } from "../exercise/exercise.schemas";
+import { commentResponseSchema } from "../comment/comment.schemas";
 
 export const workoutResponseSchema = z.object({
-	id: z.string(),
+	id: z.uuid(),
 	title: z.string(),
 	user: userResponseSchema,
-	exercises: z.array(workoutExerciseResponseSchema),
-	comments: z.array(workoutCommentResponseSchema),
+	exercises: z.array(exerciseResponseSchema),
+	comments: z.array(commentResponseSchema),
 	scheduledAt: z.iso.datetime(),
 	completedAt: z.iso.datetime().nullable(),
 	createdAt: z.iso.datetime(),
 	updatedAt: z.iso.datetime(),
 });
 
-export const workoutsResponseSchema = z.object({
+export const workoutsPaginatedResponseSchema = z.object({
 	data: z.array(workoutResponseSchema),
 	page: z.number().int().positive().optional(),
 	limit: z.number().int().positive().optional(),
@@ -47,13 +33,6 @@ export const updateWorkoutSchema = z.object({
 	completedAt: z.iso.datetime().nullable().optional(),
 });
 
-export const querySchema = z.object({
-	page: z.string().optional(),
-	limit: z.string().optional(),
-	from: z.iso.datetime().nullable().optional(),
-	to: z.iso.datetime().nullable().optional(),
-});
-
 export const workoutReportQuerySchema = z.object({
 	from: z.iso.datetime().nullable().optional(),
 	to: z.iso.datetime().nullable().optional(),
@@ -67,8 +46,9 @@ export const workoutReportResponseSchema = z.object({
 
 export type CreateWorkoutInput = z.infer<typeof createWorkoutSchema>;
 export type UpdateWorkoutInput = z.infer<typeof updateWorkoutSchema>;
-export type QueryWorkoutsInput = z.infer<typeof querySchema>;
 export type WorkoutResponse = z.infer<typeof workoutResponseSchema>;
-export type WorkoutsResponse = z.infer<typeof workoutsResponseSchema>;
 export type WorkoutReportQuery = z.infer<typeof workoutReportQuerySchema>;
 export type WorkoutReportResponse = z.infer<typeof workoutReportResponseSchema>;
+export type WorkoutsPaginatedResponse = z.infer<
+	typeof workoutsPaginatedResponseSchema
+>;

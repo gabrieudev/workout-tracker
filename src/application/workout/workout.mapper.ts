@@ -1,5 +1,8 @@
 import type { UserResponse } from "../user/user.schemas";
-import type { WorkoutResponse, WorkoutsResponse } from "./workout.schemas";
+import type {
+	WorkoutResponse,
+	WorkoutsPaginatedResponse,
+} from "./workout.schemas";
 
 type WorkoutDb = {
 	id: string;
@@ -43,8 +46,8 @@ export const toWorkoutResponse = (workout: WorkoutDb): WorkoutResponse => ({
 
 export const toWorkoutsResponse = (
 	data: WorkoutDb[],
-	meta: Omit<WorkoutsResponse, "data">,
-): WorkoutsResponse => ({
+	meta: Omit<WorkoutsPaginatedResponse, "data">,
+): WorkoutsPaginatedResponse => ({
 	data: data.map(toWorkoutResponse),
 	...meta,
 });
