@@ -18,12 +18,18 @@ import { DrizzleWorkoutRepository } from "../../../infra/repositories/drizzle-wo
 import { betterAuthMacro } from "../middlewares/auth";
 
 const repo = new DrizzleWorkoutRepository();
+
 const createWorkoutUseCase = new CreateWorkoutUseCase(repo);
 const findAllWorkoutsUseCase = new FindAllWorkoutsUseCase(repo);
 const findWorkoutByIdUseCase = new FindWorkoutByIdUseCase(repo);
 const updateWorkoutUseCase = new UpdateWorkoutUseCase(repo);
 const deleteWorkoutUseCase = new DeleteWorkoutUseCase(repo);
 const workoutReportUseCase = new WorkoutReportUseCase(repo);
+
+const errorSchema = z.object({
+	message: z.string(),
+	code: z.string().optional(),
+});
 
 export const workoutRoutes = new Elysia({
 	prefix: "/workouts",
@@ -36,7 +42,21 @@ export const workoutRoutes = new Elysia({
 		async ({ body, user }) => {
 			return createWorkoutUseCase.execute(body, user.id);
 		},
-		{ auth: true, body: createWorkoutSchema, response: workoutResponseSchema },
+		{
+			auth: true,
+			body: createWorkoutSchema,
+			detail: {
+				summary: "Criar treino",
+				description: "Cria um novo treino para o usuário autenticado.",
+				operationId: "createWorkout",
+			},
+			response: {
+				200: workoutResponseSchema,
+				400: errorSchema,
+				401: errorSchema,
+				500: errorSchema,
+			},
+		},
 	)
 
 	.get(
@@ -53,12 +73,22 @@ export const workoutRoutes = new Elysia({
 		{
 			auth: true,
 			query: workoutQuerySchema,
-			response: z.object({
-				data: workoutResponseSchema.array(),
-				page: z.number().optional(),
-				limit: z.number().optional(),
-				total: z.number(),
-			}),
+			detail: {
+				summary: "Listar treinos",
+				description:
+					"Retorna uma lista paginada de treinos do usuário autenticado, podendo filtrar por período.",
+				operationId: "findAllWorkouts",
+			},
+			response: {
+				200: z.object({
+					data: workoutResponseSchema.array(),
+					page: z.number().optional(),
+					limit: z.number().optional(),
+					total: z.number(),
+				}),
+				401: errorSchema,
+				500: errorSchema,
+			},
 		},
 	)
 
@@ -69,8 +99,18 @@ export const workoutRoutes = new Elysia({
 		},
 		{
 			auth: true,
-			response: workoutResponseSchema,
 			params: z.object({ id: z.uuid() }),
+			detail: {
+				summary: "Buscar treino por ID",
+				description:
+					"Retorna um treino específico do usuário autenticado pelo ID.",
+				operationId: "findWorkoutById",
+			},
+			response: {
+				200: workoutResponseSchema,
+				401: errorSchema,
+				404: errorSchema,
+			},
 		},
 	)
 
@@ -80,10 +120,22 @@ export const workoutRoutes = new Elysia({
 			return updateWorkoutUseCase.execute(params.id, user.id, body);
 		},
 		{
-			body: updateWorkoutSchema,
 			auth: true,
-			response: workoutResponseSchema,
+			body: updateWorkoutSchema,
 			params: z.object({ id: z.uuid() }),
+			detail: {
+				summary: "Atualizar treino",
+				description:
+					"Atualiza os dados de um treino existente do usuário autenticado.",
+				operationId: "updateWorkout",
+			},
+			response: {
+				200: workoutResponseSchema,
+				400: errorSchema,
+				401: errorSchema,
+				404: errorSchema,
+				500: errorSchema,
+			},
 		},
 	)
 
@@ -95,10 +147,20 @@ export const workoutRoutes = new Elysia({
 		},
 		{
 			auth: true,
-			response: z.object({
-				success: z.boolean(),
-			}),
 			params: z.object({ id: z.uuid() }),
+			detail: {
+				summary: "Deletar treino",
+				description: "Remove um treino do usuário autenticado.",
+				operationId: "deleteWorkout",
+			},
+			response: {
+				204: z.object({
+					success: z.boolean(),
+				}),
+				401: errorSchema,
+				404: errorSchema,
+				500: errorSchema,
+			},
 		},
 	)
 
@@ -114,6 +176,16 @@ export const workoutRoutes = new Elysia({
 		{
 			auth: true,
 			query: workoutReportQuerySchema,
-			response: workoutReportResponseSchema,
+			detail: {
+				summary: "Relatório de treinos",
+				description:
+					"Gera um relatório agregando informações dos treinos do usuário dentro de um período.",
+				operationId: "workoutReport",
+			},
+			response: {
+				200: workoutReportResponseSchema,
+				401: errorSchema,
+				500: errorSchema,
+			},
 		},
 	);
