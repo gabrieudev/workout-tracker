@@ -7,6 +7,7 @@ import { errorPlugin } from "./presentation/http/error-handler";
 import { healthRoute } from "./presentation/http/routes/health.route";
 import { workoutRoutes } from "./presentation/http/routes/workout.routes";
 import { commentRoutes } from "./presentation/http/routes/comment.routes";
+import { exerciseRoutes } from "./presentation/http/routes/exercise.routes";
 
 const app = new Elysia()
 	.mount(auth.handler)
@@ -43,6 +44,7 @@ const app = new Elysia()
 	.use(healthRoute)
 	.use(workoutRoutes)
 	.use(commentRoutes)
+	.use(exerciseRoutes)
 	.listen(process.env.PORT || 3000);
 
 console.log(`Servidor rodando em ${app.server?.hostname}:${app.server?.port}`);
