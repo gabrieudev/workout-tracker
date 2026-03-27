@@ -3,7 +3,7 @@ import type {
 	ExerciseResponse,
 	ExercisesPaginatedResponse,
 	UpdateExerciseRequest,
-} from "../../application/exercise/exercise.schemas";
+} from "../exercise/exercise.schemas";
 
 export interface ExerciseRepository {
 	create(data: CreateExerciseRequest): Promise<ExerciseResponse | null>;

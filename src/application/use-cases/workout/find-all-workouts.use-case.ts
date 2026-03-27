@@ -1,4 +1,4 @@
-import type { WorkoutRepository } from "./workout.repository";
+import type { WorkoutRepository } from "../../ports/workout.repository";
 
 export class FindAllWorkoutsUseCase {
 	constructor(private repo: WorkoutRepository) {}

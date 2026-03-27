@@ -3,7 +3,7 @@ import type {
 	UpdateWorkoutInput,
 	WorkoutResponse,
 	WorkoutsPaginatedResponse,
-} from "../../application/workout/workout.schemas";
+} from "../workout/workout.schemas";
 
 export interface WorkoutRepository {
 	create(

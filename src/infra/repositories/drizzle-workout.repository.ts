@@ -5,7 +5,7 @@ import type {
 	WorkoutResponse,
 	WorkoutsPaginatedResponse,
 } from "../../application/workout/workout.schemas";
-import type { WorkoutRepository } from "../../domain/workout/workout.repository";
+import type { WorkoutRepository } from "../../application/ports/workout.repository";
 import { db } from "../db/client";
 import { workouts } from "../db/schema";
 import {

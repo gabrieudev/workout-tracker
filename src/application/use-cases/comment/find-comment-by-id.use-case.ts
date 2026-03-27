@@ -1,7 +1,7 @@
-import type { CommentResponse } from "../../application/comment/comment.schemas";
-import type { CommentRepository } from "./comment.repository";
-import type { WorkoutRepository } from "../workout/workout.repository";
-import { AppError } from "../errors";
+import type { CommentResponse } from "../../comment/comment.schemas";
+import { AppError } from "../../../domain/errors";
+import type { WorkoutRepository } from "../../ports/workout.repository";
+import type { CommentRepository } from "../../ports/comment.repository";
 
 export class FindCommentByIdUseCase {
 	constructor(

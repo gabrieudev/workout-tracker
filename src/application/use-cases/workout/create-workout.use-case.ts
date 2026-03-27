@@ -1,9 +1,9 @@
 import type {
 	CreateWorkoutInput,
 	WorkoutResponse,
-} from "../../application/workout/workout.schemas";
-import { AppError } from "../errors";
-import type { WorkoutRepository } from "./workout.repository";
+} from "../../workout/workout.schemas";
+import { AppError } from "../../../domain/errors";
+import type { WorkoutRepository } from "../../ports/workout.repository";
 
 export class CreateWorkoutUseCase {
 	constructor(private repo: WorkoutRepository) {}

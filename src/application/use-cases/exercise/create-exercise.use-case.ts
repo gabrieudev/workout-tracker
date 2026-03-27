@@ -1,9 +1,9 @@
 import type {
 	CreateExerciseRequest,
 	ExerciseResponse,
-} from "../../application/exercise/exercise.schemas";
-import { AppError } from "../errors";
-import type { ExerciseRepository } from "./exercise.repository";
+} from "../../exercise/exercise.schemas";
+import { AppError } from "../../../domain/errors";
+import type { ExerciseRepository } from "../../ports/exercise.repository";
 
 export class CreateExerciseUseCase {
 	constructor(private repo: ExerciseRepository) {}

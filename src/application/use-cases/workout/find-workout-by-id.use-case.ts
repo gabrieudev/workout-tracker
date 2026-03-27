@@ -1,5 +1,5 @@
-import { AppError } from "../errors";
-import type { WorkoutRepository } from "./workout.repository";
+import { AppError } from "../../../domain/errors";
+import type { WorkoutRepository } from "../../ports/workout.repository";
 
 export class FindWorkoutByIdUseCase {
 	constructor(private repo: WorkoutRepository) {}

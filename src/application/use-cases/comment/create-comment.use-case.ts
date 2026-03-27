@@ -1,9 +1,9 @@
 import type {
 	CommentResponse,
 	CreateCommentRequest,
-} from "../../application/comment/comment.schemas";
-import { AppError } from "../errors";
-import type { CommentRepository } from "./comment.repository";
+} from "../../comment/comment.schemas";
+import { AppError } from "../../../domain/errors";
+import type { CommentRepository } from "../../ports/comment.repository";
 
 export class CreateCommentUseCase {
 	constructor(private repo: CommentRepository) {}

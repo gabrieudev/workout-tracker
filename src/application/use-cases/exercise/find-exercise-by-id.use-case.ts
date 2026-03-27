@@ -1,7 +1,7 @@
-import type { ExerciseResponse } from "../../application/exercise/exercise.schemas";
-import { AppError } from "../errors";
-import type { WorkoutRepository } from "../workout/workout.repository";
-import type { ExerciseRepository } from "./exercise.repository";
+import type { ExerciseResponse } from "../../exercise/exercise.schemas";
+import { AppError } from "../../../domain/errors";
+import type { WorkoutRepository } from "../../ports/workout.repository";
+import type { ExerciseRepository } from "../../ports/exercise.repository";
 
 export class FindExerciseByIdUseCase {
 	constructor(

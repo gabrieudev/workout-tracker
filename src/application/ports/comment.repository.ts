@@ -3,7 +3,7 @@ import type {
 	CommentsPaginatedResponse,
 	CreateCommentRequest,
 	UpdateCommentRequest,
-} from "../../application/comment/comment.schemas";
+} from "../comment/comment.schemas";
 
 export interface CommentRepository {
 	create(data: CreateCommentRequest): Promise<CommentResponse | null>;

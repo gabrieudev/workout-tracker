@@ -9,7 +9,7 @@ import type {
 	ExercisesPaginatedResponse,
 	UpdateExerciseRequest,
 } from "../../application/exercise/exercise.schemas";
-import type { ExerciseRepository } from "../../domain/exercise/exercise.repository";
+import type { ExerciseRepository } from "../../application/ports/exercise.repository";
 import { db } from "../db/client";
 import { exercises, workouts } from "../db/schema";
 

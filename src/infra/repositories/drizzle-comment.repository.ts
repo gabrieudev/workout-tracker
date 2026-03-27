@@ -9,7 +9,7 @@ import type {
 	CreateCommentRequest,
 	UpdateCommentRequest,
 } from "../../application/comment/comment.schemas";
-import type { CommentRepository } from "../../domain/comment/comment.repository";
+import type { CommentRepository } from "../../application/ports/comment.repository";
 import { db } from "../db/client";
 import { comments, workouts } from "../db/schema";
 
@@ -62,7 +62,10 @@ export class DrizzleCommentRepository implements CommentRepository {
 		const offset = shouldPaginate ? (page - 1) * limit : undefined;
 
 		const buildConditions = (
-			comment: any,
+			comment: {
+				workoutId: typeof comments.workoutId;
+				createdAt: typeof comments.createdAt;
+			},
 			helpers: {
 				and: typeof and;
 				gte: typeof gte;
