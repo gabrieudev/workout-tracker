@@ -1,7 +1,6 @@
 import Elysia from "elysia";
 import z from "zod";
 import {
-	commentQuerySchema,
 	commentResponseSchema,
 	createCommentRequestSchema,
 	updateCommentRequestSchema,
@@ -20,6 +19,17 @@ const errorSchema = z.object({
 	code: z.string().optional(),
 });
 
+const workoutCommentsQuerySchema = z.object({
+	page: z.string().optional(),
+	limit: z.string().optional(),
+	from: z.iso.datetime().nullable().optional(),
+	to: z.iso.datetime().nullable().optional(),
+});
+
+const createWorkoutCommentBodySchema = createCommentRequestSchema.omit({
+	workoutId: true,
+});
+
 type CommentRoutesDeps = {
 	findCommentByIdUseCase: FindCommentByIdUseCase;
 	findAllCommentsUseCase: FindAllCommentsUseCase;
@@ -30,23 +40,63 @@ type CommentRoutesDeps = {
 
 export const createCommentRoutes = (deps: CommentRoutesDeps) =>
 	new Elysia({
-		prefix: "/comments",
+		prefix: "",
 		detail: { tags: ["Comments"] },
 	})
 		.use(betterAuthMacro)
 
-		.post(
-			"/",
-			async ({ body }) => {
-				return await deps.createCommentUseCase.execute(body);
+		.get(
+			"/workouts/:workoutId/comments",
+			async ({ params, query, user }) => {
+				return await deps.findAllCommentsUseCase.execute({
+					userId: user.id,
+					workoutId: params.workoutId,
+					page: query.page ? Number(query.page) : undefined,
+					limit: query.limit ? Number(query.limit) : undefined,
+					from: query.from ? new Date(query.from) : undefined,
+					to: query.to ? new Date(query.to) : undefined,
+				});
 			},
 			{
 				auth: true,
-				body: createCommentRequestSchema,
+				params: z.object({ workoutId: z.uuid() }),
+				query: workoutCommentsQuerySchema,
 				detail: {
-					summary: "Criar comentário",
-					description: "Cria um novo comentário associado a um treino.",
-					operationId: "createComment",
+					summary: "Listar comentários do treino",
+					description:
+						"Retorna uma lista paginada de comentários associados a um treino do usuário autenticado, podendo filtrar por período.",
+					operationId: "listWorkoutComments",
+				},
+				response: {
+					200: z.object({
+						data: commentResponseSchema.array(),
+						page: z.number().optional(),
+						limit: z.number().optional(),
+						total: z.number(),
+					}),
+					401: errorSchema,
+					500: errorSchema,
+				},
+			},
+		)
+
+		.post(
+			"/workouts/:workoutId/comments",
+			async ({ params, body }) => {
+				return await deps.createCommentUseCase.execute({
+					...body,
+					workoutId: params.workoutId,
+				});
+			},
+			{
+				auth: true,
+				params: z.object({ workoutId: z.uuid() }),
+				body: createWorkoutCommentBodySchema,
+				detail: {
+					summary: "Criar comentário no treino",
+					description:
+						"Cria um novo comentário associado a um treino específico.",
+					operationId: "createWorkoutComment",
 				},
 				response: {
 					200: commentResponseSchema,
@@ -58,7 +108,7 @@ export const createCommentRoutes = (deps: CommentRoutesDeps) =>
 		)
 
 		.get(
-			"/:id",
+			"/comments/:id",
 			async ({ params, user }) => {
 				return await deps.findCommentByIdUseCase.execute(params.id, user.id);
 			},
@@ -80,42 +130,8 @@ export const createCommentRoutes = (deps: CommentRoutesDeps) =>
 			},
 		)
 
-		.get(
-			"/",
-			async ({ query, user }) => {
-				return await deps.findAllCommentsUseCase.execute({
-					userId: user.id,
-					workoutId: query.workoutId,
-					page: query.page ? Number(query.page) : undefined,
-					limit: query.limit ? Number(query.limit) : undefined,
-					from: query.from ? new Date(query.from) : undefined,
-					to: query.to ? new Date(query.to) : undefined,
-				});
-			},
-			{
-				auth: true,
-				query: commentQuerySchema,
-				detail: {
-					summary: "Listar comentários",
-					description:
-						"Retorna uma lista paginada de comentários do usuário autenticado, podendo filtrar por treino e período.",
-					operationId: "findAllComments",
-				},
-				response: {
-					200: z.object({
-						data: commentResponseSchema.array(),
-						page: z.number().optional(),
-						limit: z.number().optional(),
-						total: z.number(),
-					}),
-					401: errorSchema,
-					500: errorSchema,
-				},
-			},
-		)
-
 		.put(
-			"/:id",
+			"/comments/:id",
 			async ({ params, body, user }) => {
 				return await deps.updateCommentUseCase.execute(
 					params.id,
@@ -144,7 +160,7 @@ export const createCommentRoutes = (deps: CommentRoutesDeps) =>
 		)
 
 		.delete(
-			"/:id",
+			"/comments/:id",
 			async ({ params, user }) => {
 				await deps.deleteCommentUseCase.execute(params.id, user.id);
 				return { success: true };

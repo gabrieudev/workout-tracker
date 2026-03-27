@@ -95,13 +95,13 @@ export const createWorkoutRoutes = (deps: WorkoutRoutesDeps) =>
 		)
 
 		.get(
-			"/:id",
+			"/:workoutId",
 			async ({ params, user }) => {
-				return deps.findWorkoutByIdUseCase.execute(params.id, user.id);
+				return deps.findWorkoutByIdUseCase.execute(params.workoutId, user.id);
 			},
 			{
 				auth: true,
-				params: z.object({ id: z.uuid() }),
+				params: z.object({ workoutId: z.uuid() }),
 				detail: {
 					summary: "Buscar treino por ID",
 					description:
@@ -117,14 +117,18 @@ export const createWorkoutRoutes = (deps: WorkoutRoutesDeps) =>
 		)
 
 		.put(
-			"/:id",
+			"/:workoutId",
 			async ({ params, body, user }) => {
-				return deps.updateWorkoutUseCase.execute(params.id, user.id, body);
+				return deps.updateWorkoutUseCase.execute(
+					params.workoutId,
+					user.id,
+					body,
+				);
 			},
 			{
 				auth: true,
 				body: updateWorkoutSchema,
-				params: z.object({ id: z.uuid() }),
+				params: z.object({ workoutId: z.uuid() }),
 				detail: {
 					summary: "Atualizar treino",
 					description:
@@ -142,14 +146,14 @@ export const createWorkoutRoutes = (deps: WorkoutRoutesDeps) =>
 		)
 
 		.delete(
-			"/:id",
+			"/:workoutId",
 			async ({ params, user }) => {
-				await deps.deleteWorkoutUseCase.execute(params.id, user.id);
+				await deps.deleteWorkoutUseCase.execute(params.workoutId, user.id);
 				return { success: true };
 			},
 			{
 				auth: true,
-				params: z.object({ id: z.uuid() }),
+				params: z.object({ workoutId: z.uuid() }),
 				detail: {
 					summary: "Deletar treino",
 					description: "Remove um treino do usuário autenticado.",
@@ -167,7 +171,7 @@ export const createWorkoutRoutes = (deps: WorkoutRoutesDeps) =>
 		)
 
 		.get(
-			"/report",
+			"/reports",
 			async ({ query, user }) => {
 				return deps.workoutReportUseCase.execute(
 					user.id,

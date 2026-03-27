@@ -19,10 +19,13 @@ const errorSchema = z.object({
 	code: z.string().optional(),
 });
 
-const exerciseQuerySchema = z.object({
-	workoutId: z.uuid().optional(),
+const workoutExercisesQuerySchema = z.object({
 	page: z.string().optional(),
 	limit: z.string().optional(),
+});
+
+const createWorkoutExerciseBodySchema = createExerciseRequestSchema.omit({
+	workoutId: true,
 });
 
 type ExerciseRoutesDeps = {
@@ -35,23 +38,61 @@ type ExerciseRoutesDeps = {
 
 export const createExerciseRoutes = (deps: ExerciseRoutesDeps) =>
 	new Elysia({
-		prefix: "/exercises",
+		prefix: "",
 		detail: { tags: ["Exercises"] },
 	})
 		.use(betterAuthMacro)
 
-		.post(
-			"/",
-			async ({ body }) => {
-				return await deps.createExerciseUseCase.execute(body);
+		.get(
+			"/workouts/:workoutId/exercises",
+			async ({ params, query, user }) => {
+				return await deps.findAllExercisesUseCase.execute({
+					userId: user.id,
+					workoutId: params.workoutId,
+					page: query.page ? Number(query.page) : undefined,
+					limit: query.limit ? Number(query.limit) : undefined,
+				});
 			},
 			{
 				auth: true,
-				body: createExerciseRequestSchema,
+				params: z.object({ workoutId: z.uuid() }),
+				query: workoutExercisesQuerySchema,
 				detail: {
-					summary: "Criar exercício",
-					description: "Cria um novo exercício associado a um treino.",
-					operationId: "createExercise",
+					summary: "Listar exercícios do treino",
+					description:
+						"Retorna uma lista paginada de exercícios associados a um treino do usuário autenticado.",
+					operationId: "listWorkoutExercises",
+				},
+				response: {
+					200: z.object({
+						data: exerciseResponseSchema.array(),
+						page: z.number().optional(),
+						limit: z.number().optional(),
+						total: z.number(),
+					}),
+					401: errorSchema,
+					500: errorSchema,
+				},
+			},
+		)
+
+		.post(
+			"/workouts/:workoutId/exercises",
+			async ({ params, body }) => {
+				return await deps.createExerciseUseCase.execute({
+					...body,
+					workoutId: params.workoutId,
+				});
+			},
+			{
+				auth: true,
+				params: z.object({ workoutId: z.uuid() }),
+				body: createWorkoutExerciseBodySchema,
+				detail: {
+					summary: "Criar exercício no treino",
+					description:
+						"Cria um novo exercício associado a um treino específico.",
+					operationId: "createWorkoutExercise",
 				},
 				response: {
 					200: exerciseResponseSchema,
@@ -63,7 +104,7 @@ export const createExerciseRoutes = (deps: ExerciseRoutesDeps) =>
 		)
 
 		.get(
-			"/:id",
+			"/exercises/:id",
 			async ({ params, user }) => {
 				return await deps.findExerciseByIdUseCase.execute(params.id, user.id);
 			},
@@ -85,40 +126,8 @@ export const createExerciseRoutes = (deps: ExerciseRoutesDeps) =>
 			},
 		)
 
-		.get(
-			"/",
-			async ({ query, user }) => {
-				return await deps.findAllExercisesUseCase.execute({
-					userId: user.id,
-					workoutId: query.workoutId,
-					page: query.page ? Number(query.page) : undefined,
-					limit: query.limit ? Number(query.limit) : undefined,
-				});
-			},
-			{
-				auth: true,
-				query: exerciseQuerySchema,
-				detail: {
-					summary: "Listar exercícios",
-					description:
-						"Retorna uma lista paginada de exercícios do usuário autenticado, podendo filtrar por treino.",
-					operationId: "findAllExercises",
-				},
-				response: {
-					200: z.object({
-						data: exerciseResponseSchema.array(),
-						page: z.number().optional(),
-						limit: z.number().optional(),
-						total: z.number(),
-					}),
-					401: errorSchema,
-					500: errorSchema,
-				},
-			},
-		)
-
 		.put(
-			"/:id",
+			"/exercises/:id",
 			async ({ params, body, user }) => {
 				return await deps.updateExerciseUseCase.execute(
 					params.id,
@@ -147,7 +156,7 @@ export const createExerciseRoutes = (deps: ExerciseRoutesDeps) =>
 		)
 
 		.delete(
-			"/:id",
+			"/exercises/:id",
 			async ({ params, user }) => {
 				await deps.deleteExerciseUseCase.execute(params.id, user.id);
 				return { success: true };
