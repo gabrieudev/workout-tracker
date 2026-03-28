@@ -3,9 +3,9 @@ import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { db } from "../db/client";
 import * as schema from "../db/schema";
 import { openAPI } from "better-auth/plugins";
-//import { RedisClient } from "bun";
+import { RedisClient } from "bun";
 
-//const redis = new RedisClient(process.env.REDIS_URL as string);
+const redis = new RedisClient(process.env.REDIS_URL as string);
 
 export const auth = betterAuth({
 	database: drizzleAdapter(db, {
@@ -33,21 +33,21 @@ export const auth = betterAuth({
 			maxAge: 5 * 60, // 5 minutos
 		},
 	},
-	//secondaryStorage: {
-	//	async get(key) {
-	//		return await redis.get(key);
-	//	},
-	//	async delete(key) {
-	//		await redis.del(key);
-	//	},
-	//	async set(key, value, ttl) {
-	//		const result = await redis.set(key, value);
-	//		if (typeof ttl === "number") {
-	//			await redis.expire(key, ttl);
-	//		}
-	//		return result;
-	//	},
-	//},
+	secondaryStorage: {
+		async get(key) {
+			return await redis.get(key);
+		},
+		async delete(key) {
+			await redis.del(key);
+		},
+		async set(key, value, ttl) {
+			const result = await redis.set(key, value);
+			if (typeof ttl === "number") {
+				await redis.expire(key, ttl);
+			}
+			return result;
+		},
+	},
 	plugins: [openAPI()],
 	basePath: "/api/auth",
 });
