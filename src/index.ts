@@ -2,14 +2,16 @@ import { logger } from "@bogeychan/elysia-logger";
 import { cors } from "@elysiajs/cors";
 import { openapi } from "@elysiajs/openapi";
 import { Elysia } from "elysia";
-import z from "zod";
+import { rateLimit } from "elysia-rate-limit";
 import { auth, OpenAPI } from "./infra/auth/auth";
+import { RedisContext } from "./infra/cache/redis-rate-limit-context";
+import { buildContainer } from "./main/container";
 import { errorPlugin } from "./presentation/http/error-handler";
-import { healthRoute } from "./presentation/http/routes/health.route";
-import { createWorkoutRoutes } from "./presentation/http/routes/workout.routes";
 import { createCommentRoutes } from "./presentation/http/routes/comment.routes";
 import { createExerciseRoutes } from "./presentation/http/routes/exercise.routes";
-import { buildContainer } from "./main/container";
+import { healthRoute } from "./presentation/http/routes/health.route";
+import { createWorkoutRoutes } from "./presentation/http/routes/workout.routes";
+import z from "zod";
 
 const container = buildContainer();
 
@@ -50,6 +52,13 @@ const app = new Elysia()
 					path: ctx.path,
 				};
 			},
+		}),
+	)
+	.use(
+		rateLimit({
+			max: 100,
+			duration: 60_000,
+			context: new RedisContext(60_000),
 		}),
 	)
 	.use(errorPlugin)

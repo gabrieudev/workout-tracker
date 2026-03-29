@@ -3,9 +3,7 @@ import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { db } from "../db/client";
 import * as schema from "../db/schema";
 import { openAPI } from "better-auth/plugins";
-import { RedisClient } from "bun";
-
-const redis = new RedisClient(process.env.REDIS_URL as string);
+import { redis } from "../cache/redis-client";
 
 export const auth = betterAuth({
 	database: drizzleAdapter(db, {
